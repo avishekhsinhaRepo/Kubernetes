@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-deployment
+  labels:
+    app: users-api-dpl
+spec:
+  template:
+    metadata:
+      labels:
+        app: users-api
+    spec:
+      containers:
+      - name: users-api-container
+        image: asinha37/users-api:latest
+        env:
+          - name: AUTH_ADDRESS
+            value: "auth-service.default"
+        ports:
+        - containerPort: 8080
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-api

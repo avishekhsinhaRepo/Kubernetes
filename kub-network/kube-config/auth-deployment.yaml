@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deployment
+  labels:
+    app: auth-api-dpl
+spec:
+  template:
+    metadata:
+      labels:
+        app: auth-api
+    spec:
+      containers:
+        - name: auth-api-container
+          image: asinha37/auth-api:latest
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-api
