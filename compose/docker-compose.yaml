@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    #environment:
+      #- MONGO_INITDB_ROOT_USERNAME: max
+      #- MONGO_INITDB_ROOT_PASSWORD: secret
+      #- MONGO_INITDB_ROOT_USERNAME=max
+      #- MONGO_INITDB_ROOT_PASSWORD=secret
+    env_file:
+      - ./env/mongo.env
+  backend:
+    build: ./backend
+    # if the dockerfile is not named Dockerfile, you can specify it here
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    volumes:
+      - logs:/app/logs #NAMED VOLUME
+      - ./backend:/app #BIND MOUNT
+      - /app/node_modules #anonymous volume
+    env_file:
+      #- ./env/mongo.env
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend/src:/app
+    # - /app/node_modules
+    # env_file:
+    #   - ./env/frontend.env
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+volumes:
+  #No need to list the bind mount and anonymous volume. List only the named volume
+  data:
+  logs:

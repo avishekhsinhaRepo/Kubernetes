@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+  labels:
+    app: story-dpl
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: story
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+      - name: story
+        image: asinha37/story:latest
+        volumeMounts:
+          - mountPath: /app/story
+            name: story-volume
+        ports:
+        - containerPort: 3000
+        env:
+         - name: STORY_FOLDER
+           valueFrom:
+             configMapKeyRef:
+                name: data-store-env
+                key: folder
+      volumes:
+        - name: story-volume
+          # emptyDir: {}
+          # hostPath:
+          #   path: /data
+          #   type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: host-pvc
